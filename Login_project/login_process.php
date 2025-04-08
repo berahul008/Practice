@@ -1,7 +1,7 @@
 <?php
 // login_process.php
 
-$servername = "localhost";
+$servername = "mysql-service";
 $username = "your_mysql_username";
 $password = "your_mysql_password";
 $dbname = "your_database_name";

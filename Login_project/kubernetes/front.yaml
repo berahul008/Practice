@@ -14,7 +14,7 @@ spec:
         app: mydep
     spec:
       containers:
-      - image: nakaderahul94/login_page_project:1
+      - image: nakaderahul94/login_page_project:2
         name: login-front-continer
         ports:
           - containerPort: 80
