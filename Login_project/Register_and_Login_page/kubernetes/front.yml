@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+  namespace: dev # Make sure this matches the namespace of your secrets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      initContainers:
+        - name: init-db
+          image: mysql:latest # Or an image with database client tools
+          command: ['bash', '-c', 'until mysql -h mysql-service -u root -p"$DB_ROOT_PASSWORD" -e "SELECT 1;"; do echo "Waiting for database..."; sleep 5; done; mysql -h mysql-service -u root -p"$DB_ROOT_PASSWORD" < /initdb/init.sql']
+          env:
+            - name: DB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-root-credentials
+                  key: password
+          volumeMounts:
+            - name: init-script-volume
+              mountPath: /initdb
+      containers:
+        - image: nakaderahul94/login_page_project:with_register_page_2
+          name: login-front-continer
+          ports:
+            - containerPort: 80
+          env:
+            - name: MYSQL_HOST
+              value: mysql-service # Name of your MySQL Kubernetes Service
+            - name: MYSQL_USER
+              value: ramesh # Use the username created by the init script
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-credentials # Kubernetes Secret for MySQL password
+                  key: password
+            - name: MYSQL_DATABASE
+              value: login_credentials # Use the database name created by the init script
+      volumes:
+        - name: init-script-volume
+          configMap:
+            name: init-db-script
