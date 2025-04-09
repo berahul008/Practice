@@ -1,10 +1,10 @@
 <?php
 // login_process.php
 
-$servername = "mysql-service";
-$username = "your_mysql_username";
-$password = "your_mysql_password";
-$dbname = "your_database_name";
+$servername = getenv('MYSQL_HOST');
+$username = getenv('MYSQL_USER');
+$password = getenv('MYSQL_PASSWORD');
+$dbname = getenv('MYSQL_DATABASE');
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -15,24 +15,32 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
+    $username = mysqli_real_escape_string($conn, $_POST["username"]);
     $password = $_POST["password"];
 
-    // SQL Injection Prevention
-    $username = mysqli_real_escape_string($conn, $username);
-    $password = mysqli_real_escape_string($conn, $password);
-
-    $sql = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+    // SQL to retrieve the hashed password for the given username
+    $sql = "SELECT id, password FROM users WHERE username = '$username'";
     $result = $conn->query($sql);
 
-    if ($result->num_rows > 0) {
-        // Login successful
-        echo "Login successful!";
-        // Redirect to a welcome page or other authorized area.
-        // header("Location: welcome.php");
-        // exit();
+    if ($result->num_rows == 1) {
+        $row = $result->fetch_assoc();
+        $hashedPasswordFromDb = $row["password"];
+
+        // Verify the entered password against the stored hash
+        if (password_verify($password, $hashedPasswordFromDb)) {
+            // Login successful
+            echo "Login successful!";
+            // You would typically start a session and redirect the user here
+            // session_start();
+            // $_SESSION['username'] = $username;
+            // header("Location: welcome.php");
+            // exit();
+        } else {
+            // Password does not match
+            echo "Invalid username or password.";
+        }
     } else {
-        // Login failed
+        // Username not found
         echo "Invalid username or password.";
     }
 }
