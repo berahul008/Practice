@@ -1,0 +1,3 @@
+kubectl exec -it mysql-deployment-556f48f455-82q8f -c mysql-container -n dev -- mysql -u ramesh -p"Test@321@123" login_credentials
+
+kubectl logs mysql-deployment-556f48f455-82q8f -c mysql-container -n dev --follow
