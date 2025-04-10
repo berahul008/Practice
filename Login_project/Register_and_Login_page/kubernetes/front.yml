@@ -27,7 +27,7 @@ spec:
             - name: init-script-volume
               mountPath: /initdb
       containers:
-        - image: nakaderahul94/login_page_project:with_register_page_2
+        - image: nakaderahul94/login_page_project:with_register_page_4
           name: login-front-continer
           ports:
             - containerPort: 80
