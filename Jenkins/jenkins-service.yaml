@@ -1,0 +1,19 @@
+# jenkins-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-service
+  namespace: dev #or the namespace you want to deploy to
+spec:
+  type: NodePort #or LoadBalancer if you are on a cloud provider
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080 #choose an available port on your nodes. If using LoadBalancer, this line should be deleted.
+      name: http
+    - port: 50000
+      targetPort: 50000
+      nodePort: 30000 #choose an available port on your nodes. If using LoadBalancer, this line should be deleted.
+      name: jnlp
+  selector:
+    app: jenkins

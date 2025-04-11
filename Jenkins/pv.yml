@@ -1,0 +1,12 @@
+# jenkins-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-pv
+spec:
+  capacity:
+    storage: 10Gi # Must match the PVC's storage request
+  accessModes:
+    - ReadWriteOnce # Must match the PVC's access modes
+  hostPath:
+    path: /data/jenkins # Adjust the path as needed

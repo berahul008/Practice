@@ -1,0 +1,31 @@
+# jenkins-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: dev #or the namespace you want to deploy to
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:lts-jdk11 #or your preferred version
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 50000
+              name: jnlp
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins-home
+          persistentVolumeClaim:
+            claimName: jenkins-pv-claim
